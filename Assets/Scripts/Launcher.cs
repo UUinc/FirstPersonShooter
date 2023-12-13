@@ -1,13 +1,26 @@
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using System.Collections.Generic;
+using Photon.Realtime;
+using System.Linq;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
+    public static Launcher Instance;
+
     [SerializeField] TMP_InputField partyNameInputField;
     [SerializeField] TMP_Text partyNameText;
     [SerializeField] TMP_Text errorText;
+    [SerializeField] Transform partyListContent;
+    [SerializeField] GameObject partyListItemPrefab;
+    [SerializeField] Transform playerListContent;
+    [SerializeField] GameObject playerListItemPrefab;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         Debug.Log("Connecting to Master");
@@ -24,6 +37,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         MenuManager.Instance.OpenMenu("main");
         Debug.Log("Joined Lobby");
+        PhotonNetwork.NickName = "Player " + Random.Range(0,1000).ToString("000");
     }
 
     public void CreateParty()
@@ -37,6 +51,12 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         partyNameText.text = PhotonNetwork.CurrentRoom.Name;
         MenuManager.Instance.OpenMenu("room");
+
+        Player[] players = PhotonNetwork.PlayerList;
+        for (int i = 0; i < players.Count(); i++)
+        {
+            Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(players[i]);
+        }
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -51,8 +71,32 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuManager.Instance.OpenMenu("loading");
     }
 
+    public void JoinRoom(RoomInfo info)
+    {
+        PhotonNetwork.JoinRoom(info.Name);
+        MenuManager.Instance.OpenMenu("loading");
+    }
+
     public override void OnLeftRoom()
     {
         MenuManager.Instance.OpenMenu("main");
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (Transform trans in partyListContent)
+        {
+            Destroy(trans.gameObject);
+        }
+
+        for(int i = 0; i< roomList.Count; i++)
+        {
+            Instantiate(partyListItemPrefab, partyListContent).GetComponent<PartyListItem>().SetUp(roomList[i]);
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
     }
 }
