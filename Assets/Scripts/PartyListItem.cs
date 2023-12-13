@@ -6,7 +6,7 @@ public class PartyListItem : MonoBehaviour
 {
     [SerializeField] TMP_Text text;
 
-    RoomInfo info;
+    [HideInInspector] public RoomInfo info;
 
     public void SetUp(RoomInfo _info)
     {
