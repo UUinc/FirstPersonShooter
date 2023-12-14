@@ -1,4 +1,5 @@
 using Photon.Pun;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float walkSpeed;
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
+
+
+    [SerializeField] Item[] items;
+    int itemIndex;
+    int previousItemIndex = -1;
 
     float verticalLookRotation;
     bool grounded;
@@ -28,7 +34,11 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        if(!PV.IsMine)
+        if(PV.IsMine)
+        {
+            EquipeItem(0);
+        }
+        else
         {
             Destroy(GetComponentInChildren<Camera>().gameObject);
             Destroy(rb);
@@ -42,6 +52,15 @@ public class PlayerController : MonoBehaviour
         Look();
         Move();
         Jump();
+
+        for(int i = 0; i < items.Length; i++)
+        {
+            if(Input.GetKeyDown((i+1).ToString()))
+            {
+                EquipeItem(i); 
+                break;
+            }
+        }
     }
 
     void Look()
@@ -66,6 +85,21 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(transform.up * jumpForce);
         }
+    }
+
+    void EquipeItem(int _index)
+    {
+        if (_index == previousItemIndex) return;
+
+        itemIndex = _index;
+        items[itemIndex].itemGameObject.SetActive(true);
+
+        if(previousItemIndex != -1)
+        {
+            items[previousItemIndex].itemGameObject.SetActive(false);
+        }
+
+        previousItemIndex = itemIndex;
     }
 
     public void SetGroundedState(bool _grounded)
