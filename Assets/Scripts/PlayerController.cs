@@ -1,7 +1,10 @@
 using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject cameraHolder;
 
@@ -60,6 +63,29 @@ public class PlayerController : MonoBehaviour
                 break;
             }
         }
+
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
+        {
+            if(itemIndex >= items.Length - 1)
+            {
+                EquipeItem(0);
+            }
+            else
+            {
+                EquipeItem(itemIndex + 1);
+            }
+        }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
+        {
+            if (itemIndex <= 0)
+            {
+                EquipeItem(items.Length - 1);
+            }
+            else
+            {
+                EquipeItem(itemIndex - 1);
+            }
+        }
     }
 
     void Look()
@@ -99,6 +125,21 @@ public class PlayerController : MonoBehaviour
         }
 
         previousItemIndex = itemIndex;
+
+        if(PV.IsMine)
+        {
+            Hashtable hash = new Hashtable();
+            hash.Add("itemIndex", itemIndex);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if(!PV.IsMine && targetPlayer == PV.Owner)
+        {
+            EquipeItem((int)changedProps["itemIndex"]);
+        }
     }
 
     public void SetGroundedState(bool _grounded)
