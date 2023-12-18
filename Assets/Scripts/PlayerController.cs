@@ -7,6 +7,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 {
     [SerializeField] GameObject cameraHolder;
+    [SerializeField] GameObject body;
 
     [SerializeField] GameObject ui;
     [SerializeField] TextMeshProUGUI healthUI;
@@ -49,6 +50,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         if(PV.IsMine)
         {
             EquipeItem(0);
+            body.SetActive(false);
         }
         else
         {
