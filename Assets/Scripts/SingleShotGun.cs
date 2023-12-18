@@ -6,6 +6,7 @@ public class SingleShotGun : Gun
     [SerializeField] Camera _camera;
 
     PhotonView PV;
+    GameObject ImpactPrefab;
 
     private void Awake()
     {
@@ -26,6 +27,9 @@ public class SingleShotGun : Gun
             var gunInfo = (GunInfo) itemInfo;
             hit.collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(gunInfo.damage);
 
+            //Impact prefab
+            ImpactPrefab = hit.collider.gameObject.CompareTag("Player") ? bulletImpactPrefab : bulletImpactWallPrefab;
+
             PV.RPC("RPC_Shoot", RpcTarget.All, hit.point, hit.normal);
         }
     }
@@ -34,9 +38,9 @@ public class SingleShotGun : Gun
     void RPC_Shoot(Vector3 hitPosition, Vector3 hitNormal)
     {
         Collider[] colliders = Physics.OverlapSphere(hitPosition, 0.3f);
-        if(colliders.Length != 0 )
+        if (colliders.Length != 0)
         {
-            GameObject bulletImpactObj = Instantiate(bulletImpactPrefab, hitPosition + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal, Vector3.up) * bulletImpactPrefab.transform.rotation);
+            GameObject bulletImpactObj = Instantiate(ImpactPrefab, hitPosition + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal, Vector3.up) * bulletImpactPrefab.transform.rotation);
             Destroy(bulletImpactObj, 2f);
             bulletImpactObj.transform.SetParent(colliders[0].transform);
         }
