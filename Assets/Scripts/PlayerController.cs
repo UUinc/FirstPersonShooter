@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
 
+    [SerializeField] float clampValue = 14.5f;
 
     [SerializeField] Item[] items;
     int itemIndex;
@@ -126,6 +127,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
+
+        // Clamp in the map
+        Vector3 newPosition = transform.position;
+        newPosition.x = Mathf.Clamp(newPosition.x, -clampValue, clampValue);
+        newPosition.z = Mathf.Clamp(newPosition.z, -clampValue, clampValue);
+
+        transform.position = newPosition;
     }
 
     void Jump()

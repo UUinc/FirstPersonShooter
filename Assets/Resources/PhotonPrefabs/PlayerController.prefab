@@ -665,6 +665,7 @@ MonoBehaviour:
   walkSpeed: 3
   jumpForce: 200
   smoothTime: 0.15
+  clampValue: 14.2
   items:
   - {fileID: 4297450602503857793}
   - {fileID: 4800197728605756995}
