@@ -17,8 +17,16 @@ public class SingleShotGun : Gun
         Shoot();
     }
 
+    void Animation()
+    {
+        Animator gunAnimator = transform.GetComponentInChildren<Animator>();
+        gunAnimator.SetTrigger("shoot");
+    }
+
     void Shoot()
     {
+        Animation();
+
         Ray ray = _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         ray.origin = _camera.transform.position;
 
