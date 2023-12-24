@@ -48,7 +48,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     void Start()
     {
-        if(PV.IsMine)
+        SetSettings();
+
+        if (PV.IsMine)
         {
             EquipeItem(0);
             body.SetActive(false);
@@ -111,6 +113,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         {
             Die();
         }
+    }
+
+    void SetSettings()
+    {
+        //Mouse Sensitivity
+        mouseSensitivity = PlayerPrefs.GetFloat(SettingsManager.SENSITIVITY_KEY, 1f);
     }
 
     void Look()
