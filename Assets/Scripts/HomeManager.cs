@@ -3,6 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class HomeManager : MonoBehaviour
 {
+    private void Start()
+    {
+        AudioManager.Instance.Play("loobyMusic");
+    }
     public void LoadScene(int index)
     {
         SceneManager.LoadScene(index);
