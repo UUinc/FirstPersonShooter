@@ -148,6 +148,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded)
         {
+            AudioManager.Instance.Play("Jump");
             rb.AddForce(transform.up * jumpForce);
         }
     }
@@ -203,6 +204,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [PunRPC]
     void RPC_TakeDamage(float damage, PhotonMessageInfo info)
     {
+        AudioManager.Instance.Play("Damages");
         currentHealth -= damage;
 
         healthUI.text = Mathf.Ceil(currentHealth).ToString();

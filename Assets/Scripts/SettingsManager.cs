@@ -27,14 +27,21 @@ public class SettingsManager : MonoBehaviour
         //Sensitivity
         Debug.Log(PlayerPrefs.GetFloat(SENSITIVITY_KEY, 1f));
         sensitivitySlider.OnValueChange(PlayerPrefs.GetFloat(SENSITIVITY_KEY, 1f));
+
+        //Sound Volume
+        masterSlider.OnValueChange(AudioManager.Instance.Get_MasterVolume());
+        musicSlider.OnValueChange(AudioManager.Instance.Get_MusicVolume());
+        sfxSlider.OnValueChange(AudioManager.Instance.Get_SFXVolume());
     }
 
     public void SetFPS(bool value)
     {
+        AudioManager.Instance.Play("Click");
         PlayerPrefs.SetInt(FPS_KEY, value ? 1 : 0);
     }
     public void SetFullScreen(bool isFullScreen)
     {
+        AudioManager.Instance.Play("Click");
         PlayerPrefs.SetInt(FULLSCREEN_KEY, isFullScreen ? 1 : 0);
         Screen.fullScreen = isFullScreen;
     }
@@ -42,5 +49,20 @@ public class SettingsManager : MonoBehaviour
     public void SetSensitivity(float value)
     {
         PlayerPrefs.SetFloat(SENSITIVITY_KEY, value);
+    }
+
+    public void SetMasterVolume(float value)
+    {
+        AudioManager.Instance.Set_MasterVolume(value);
+    }
+
+    public void SetMusicVolume(float value)
+    {
+        AudioManager.Instance.Set_MusicVolume(value);
+    }
+
+    public void SetSfxVolume(float value)
+    {
+        AudioManager.Instance.Set_SFXVolume(value);
     }
 }

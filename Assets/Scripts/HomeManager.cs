@@ -17,6 +17,7 @@ public class HomeManager : MonoBehaviour
     }
     public void ExitGame()
     {
+        AudioManager.Instance.Play("Click");
         Application.Quit();
     }
 }

@@ -21,6 +21,7 @@ public class PlayerManager : MonoBehaviour
     {
         if(PV.IsMine)
         {
+            AudioManager.Instance.Play("Respawn");
             CreateController();
         }
     }
