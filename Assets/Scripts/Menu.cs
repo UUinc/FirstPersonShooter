@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour
     {
         open = true;
         gameObject.SetActive(true);
+        AudioManager.Instance.Play("Click");
     }
 
     public void Close()
