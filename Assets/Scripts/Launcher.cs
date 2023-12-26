@@ -24,13 +24,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
     private void Start()
     {
-        Debug.Log("Connecting to Master");
         PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Master");
         PhotonNetwork.JoinLobby();
         PhotonNetwork.AutomaticallySyncScene = true;
     }
@@ -38,7 +36,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         MenuManager.Instance.OpenMenu("main");
-        Debug.Log("Joined Lobby");
     }
 
     public void CreateParty()
@@ -115,6 +112,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        AudioManager.Instance.Play("Joined");
         Instantiate(playerListItemPrefab, playerListContent).GetComponent<PlayerListItem>().SetUp(newPlayer);
     }
 }

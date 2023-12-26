@@ -7,7 +7,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 {
     [SerializeField] GameObject cameraHolder;
-    [SerializeField] GameObject body;
+    [SerializeField] Transform body;
+    [SerializeField] Animator animator;
 
     [SerializeField] GameObject ui;
     [SerializeField] TextMeshProUGUI healthUI;
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [SerializeField] float clampValue = 14.5f;
 
     [SerializeField] Item[] items;
+    [SerializeField] GameObject[] guns;
     int itemIndex;
     int previousItemIndex = -1;
 
@@ -48,16 +50,29 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     void Start()
     {
-        if(PV.IsMine)
+        SetSettings();
+
+        if (PV.IsMine)
         {
             EquipeItem(0);
-            body.SetActive(false);
+
+            //Hide body from the player
+            body.GetChild(0).gameObject.SetActive(false);
+            body.GetChild(1).gameObject.SetActive(false);
+            body.GetChild(2).gameObject.SetActive(false);
+            guns[0].transform.parent.parent.gameObject.SetActive(false);
         }
         else
         {
             Destroy(GetComponentInChildren<Camera>().gameObject);
             Destroy(rb);
             Destroy(ui);
+
+            //Hide player gun from other players
+            for(int i=0; i<items.Length; i++)
+            {
+                items[i].itemGameObject.transform.GetChild(0).gameObject.SetActive(false);
+            }
         }
     }
 
@@ -68,6 +83,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         Look();
         Move();
         Jump();
+        Animation();
 
         for(int i = 0; i < items.Length; i++)
         {
@@ -113,6 +129,12 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         }
     }
 
+    void SetSettings()
+    {
+        //Mouse Sensitivity
+        mouseSensitivity = PlayerPrefs.GetFloat(SettingsManager.SENSITIVITY_KEY, 1f);
+    }
+
     void Look()
     {
         transform.Rotate(Input.GetAxisRaw("Mouse X") * mouseSensitivity * Time.deltaTime * 500 * Vector3.up);
@@ -140,8 +162,26 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded)
         {
+            AudioManager.Instance.Play("Jump");
             rb.AddForce(transform.up * jumpForce);
         }
+    }
+
+    void Animation()
+    {
+        //Animation
+        animator.SetBool("isWalking", Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0);
+        animator.SetBool("isRunning", Input.GetKey(KeyCode.LeftShift));
+
+        if (Input.GetKeyDown(KeyCode.Space) && grounded)
+            animator.SetTrigger("jump");
+
+        //Dance
+        if (Input.GetKeyDown(KeyCode.O))
+            animator.SetTrigger("hiphop");
+
+        if (Input.GetKeyDown(KeyCode.P))
+            animator.SetTrigger("hiphopGirly");
     }
 
     void EquipeItem(int _index)
@@ -150,10 +190,14 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         itemIndex = _index;
         items[itemIndex].itemGameObject.SetActive(true);
+        //Second object item
+        guns[itemIndex].SetActive(true);
 
-        if(previousItemIndex != -1)
+        if (previousItemIndex != -1)
         {
             items[previousItemIndex].itemGameObject.SetActive(false);
+            //Second object item
+            guns[previousItemIndex].SetActive(false);
         }
 
         previousItemIndex = itemIndex;
@@ -195,6 +239,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [PunRPC]
     void RPC_TakeDamage(float damage, PhotonMessageInfo info)
     {
+        AudioManager.Instance.Play("Damages");
         currentHealth -= damage;
 
         healthUI.text = Mathf.Ceil(currentHealth).ToString();

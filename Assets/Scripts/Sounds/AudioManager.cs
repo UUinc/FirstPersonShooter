@@ -91,7 +91,16 @@ public class AudioManager : MonoBehaviour
     }
 
     // Set Volume
-    public void Slide_Music(float value)
+    public void Set_MasterVolume(float value)
+    {
+        float volume;
+        if (value >= 0.1f) volume = -40 + (value - 0.1f) * (40 / 0.9f);
+        else volume = -80 + value * (40 / 0.1f);
+        volume = Math.Max(-80, Math.Min(0, volume));
+
+        audioMixer.SetFloat("volume", volume);
+    }
+    public void Set_MusicVolume(float value)
     {
         float volume;
         if (value >= 0.1f) volume = -40 + (value - 0.1f) * (40 / 0.9f);
@@ -100,7 +109,7 @@ public class AudioManager : MonoBehaviour
 
         audioMixer.SetFloat("musicVolume", volume);
     }
-    public void Slide_SoundEffects(float value)
+    public void Set_SFXVolume(float value)
     {
         float volume;
         if (value >= 0.1f) volume = -40 + (value - 0.1f) * (40 / 0.9f);
@@ -115,6 +124,10 @@ public class AudioManager : MonoBehaviour
         audioMixer.GetFloat(groupMix, out float volume);
         volume = (volume + 80) / 80;
         return volume;
+    }
+    public float Get_MasterVolume()
+    {
+        return Get_Volume("volume");
     }
     public float Get_MusicVolume()
     {

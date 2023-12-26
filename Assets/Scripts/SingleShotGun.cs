@@ -27,6 +27,9 @@ public class SingleShotGun : Gun
     {
         Animation();
 
+        string sfxKey = itemInfo.name == "Rifle" ? "Ak" : "Pistole";
+        AudioManager.Instance.Play(sfxKey);
+
         Ray ray = _camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         ray.origin = _camera.transform.position;
 
