@@ -175,6 +175,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         if (Input.GetKeyDown(KeyCode.Space) && grounded)
             animator.SetTrigger("jump");
+
+        //Dance
+        if (Input.GetKeyDown(KeyCode.O))
+            animator.SetTrigger("hiphop");
+
+        if (Input.GetKeyDown(KeyCode.P))
+            animator.SetTrigger("hiphopGirly");
     }
 
     void EquipeItem(int _index)
